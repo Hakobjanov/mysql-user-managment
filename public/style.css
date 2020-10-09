@@ -1,3 +1,7 @@
 body {
   background-color: cornsilk;
 }
+
+input:invalid {
+  border-color: red;
+}

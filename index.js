@@ -1,6 +1,17 @@
 import http from "http";
 import fs from "fs";
-import
+import mySql from "mysql";
+
+let connection = mySql.createConnection({
+  host: "db4free.net",
+  user: "vagangdenagan",
+  password: "123654789",
+  database: "mysql_users_db",
+});
+
+connection.connect(() => {
+  console.log("db connected");
+});
 
 http.createServer(handleRequest).listen(3000, () => {
   console.log("server started");
@@ -32,21 +43,16 @@ function handleRequest(req, resp) {
   }
 }
 
-let users = [
-  {
-    name: "Mitch",
-    login: "RichMond",
-  },
-  {
-    name: "Bob",
-    login: "DeNiro",
-  },
-];
-
 function apiHandler(req, resp) {
   const route = req.url.slice(5);
   if (route === "users") {
-
-    resp.end(JSON.stringify(users));
+    const sql = "SELECT * FROM users";
+    connection.query(sql, (err, users) => {
+      if (err) {
+        console.log(err, "this is error");
+      } else {
+        resp.end(JSON.stringify(users));
+      }
+    });
   }
 }
