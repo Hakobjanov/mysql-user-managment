@@ -2,8 +2,16 @@ const password = document.querySelector(".password");
 const passwordConfirm = document.querySelector(".password-confirm");
 const submitBtn = document.querySelector(".submit-btn");
 const form = document.querySelector("#form");
+const loginInInput = document.querySelector("#loginIn");
 
-loginIn.setCustomValidity("Not Valid");
+// loginInInput.setCustomValidity("Not Valid");
+loginInInput.addEventListener("invalid", () => {
+  loginInInput.setCustomValidity("Not Valid");
+});
+
+submitBtn.addEventListener("click", () => {
+  loginInInput.setCustomValidity("");
+});
 
 form.addEventListener("submit", (e) => {
   const formData = new FormData(form);
@@ -17,11 +25,11 @@ function validate(formData) {
   ]);
 
   // const [name, login, password, confirm] = formData.values();
-  // console.log({ name, login, password, confirm });
+  console.log({ name, login, password, confirm });
 
-  if (login) {
-    checkLoginAvailability(login);
-  }
+  // if (login) {
+  //   checkLoginAvailability(login);
+  // }
 }
 
 // function checkLoginAvailability(login) {

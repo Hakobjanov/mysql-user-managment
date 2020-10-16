@@ -19,6 +19,7 @@ http.createServer(handleRequest).listen(3000, () => {
 
 function handleRequest(req, resp) {
   //resp.end(fs.readFileSync("./public/index.html")); sync
+
   if (req.url === "/") {
     fs.readFile("./public/index.html", (err, fileData) => {
       if (err) {
@@ -55,4 +56,5 @@ function apiHandler(req, resp) {
       }
     });
   }
+  resp.end("api not found!");
 }
