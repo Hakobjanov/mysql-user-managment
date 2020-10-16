@@ -55,6 +55,18 @@ function apiHandler(req, resp) {
         resp.end(JSON.stringify(users));
       }
     });
+  } else if (route.startsWith("checklogin/")) {
+    const login = route.slice(11);
+    const sql = `SELECT id FROM users WHERE login = "${login}"`;
+    connection.query(sql, (err, users) => {
+      if (err) {
+        console.log(err, "db error");
+        resp.end("db error");
+      } else {
+        resp.end(users.length ? "false" : "true");
+      }
+    });
+  } else {
+    resp.end("api not found!");
   }
-  resp.end("api not found!");
 }
