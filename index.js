@@ -41,6 +41,9 @@ function handleRequest(req, resp) {
         resp.end(fileData);
       }
     });
+  } else {
+    resp.statusCode = 400;
+    resp.end("Unexpected request method and/or URL");
   }
 }
 
@@ -50,7 +53,9 @@ function apiHandler(req, resp) {
     const sql = "SELECT * FROM users";
     connection.query(sql, (err, users) => {
       if (err) {
-        console.log(err, "this is error");
+        console.log(err, "db error");
+        resp.statusCode = 400;
+        resp.end("db error");
       } else {
         resp.end(JSON.stringify(users));
       }
@@ -61,12 +66,32 @@ function apiHandler(req, resp) {
     connection.query(sql, (err, users) => {
       if (err) {
         console.log(err, "db error");
+        resp.statusCode = 400;
         resp.end("db error");
       } else {
         resp.end(users.length ? "false" : "true");
       }
     });
+  } else if (route === "register") {
+    // req.data1 => req.data2 => req.data3 => req.end
+    const chunks = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", () => {
+      const body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+
+      const sql = `INSERT INTO users (name, login, password) VALUES ("${body.name}", "${body.login}", "${body.password}")`;
+      connection.query(sql, (err) => {
+        if (err) {
+          console.log(err, "db error");
+          resp.statusCode = 400;
+          resp.end("db error");
+        } else {
+          resp.end("Successfully registered!");
+        }
+      });
+    });
   } else {
+    resp.statusCode = 400;
     resp.end("api not found!");
   }
 }

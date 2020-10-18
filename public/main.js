@@ -13,32 +13,38 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = new FormData(form);
 
-  const valid = await validate(formData);
-  e.target.reportValidity();
-});
-
-//checking login and compare password to confirm password
-async function validate(formData) {
-  const { login, password, confirm } = Object.fromEntries([
+  const { name, login, password, confirm } = Object.fromEntries([
     ...formData.entries(),
   ]);
 
-  let valid = true;
-  // const [name, login, password, confirm] = formData.values();
-  //console.log({ name, login, password, confirm });
+  await validate(login, password, confirm);
+
+  if (form.checkValidity()) {
+    const response = await fetch("/api/register", {
+      method: "POST",
+      body: JSON.stringify({ name, login, password }),
+    });
+    if (response.ok) {
+      alert("successfully registered");
+    } else {
+      alert("could not register");
+    }
+  } else {
+    form.reportValidity();
+  }
+});
+
+//checking login and compare password to confirm password
+async function validate(login, password, confirm) {
   if (login) {
     if (!(await checkLoginAvailability(login))) {
       loginInput.setCustomValidity("already occupied");
-      valid = false;
     }
   }
 
   if (password !== confirm) {
     passwordConfirmInput.setCustomValidity("does not match with password");
-    valid = false;
   }
-
-  return valid;
 }
 
 // function checkLoginAvailability(login) {
