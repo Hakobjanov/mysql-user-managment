@@ -26,6 +26,7 @@ form.addEventListener("submit", async (e) => {
     });
     if (response.ok) {
       alert("successfully registered");
+      location.href = "./auth.html";
     } else {
       alert("could not register");
     }

@@ -1,6 +1,8 @@
 import http from "http";
 import fs from "fs";
 import mySql from "mysql";
+import bcrypt from "bcryptjs";
+import { ENETRESET } from "constants";
 
 let connection = mySql.createConnection({
   host: "db4free.net",
@@ -76,10 +78,12 @@ function apiHandler(req, resp) {
     // req.data1 => req.data2 => req.data3 => req.end
     const chunks = [];
     req.on("data", (chunk) => chunks.push(chunk));
-    req.on("end", () => {
+    req.on("end", async () => {
       const body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
 
-      const sql = `INSERT INTO users (name, login, password) VALUES ("${body.name}", "${body.login}", "${body.password}")`;
+      const hash = await bcrypt.hash(body.password, 4);
+
+      const sql = `INSERT INTO users (name, login, passhash) VALUES ("${body.name}", "${body.login}", "${hash}")`;
       connection.query(sql, (err) => {
         if (err) {
           console.log(err, "db error");
@@ -90,6 +94,24 @@ function apiHandler(req, resp) {
         }
       });
     });
+  } else if (route === "auth") {
+    const chunks = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", () => {
+      const body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+
+      const sql = `SELECT passhash FROM users WHERE login = "${body.login}"`;
+
+      connection.query(sql, (err, data) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(data);
+        }
+      });
+    });
+
+    const sql = ``;
   } else {
     resp.statusCode = 400;
     resp.end("api not found!");
