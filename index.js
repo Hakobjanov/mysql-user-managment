@@ -102,18 +102,25 @@ function apiHandler(req, resp) {
 
       const sql = `SELECT passhash FROM users WHERE login = "${body.login}"`;
 
-      connection.query(sql, (err, data) => {
+      connection.query(sql, async (err, data) => {
         if (err) {
           console.log(err);
+        } else if (data.length) {
+          const correct = await bcrypt.compare(body.password, data[0].passhash);
+          if (correct) {
+            resp.end("Correcto!");
+          } else {
+            resp.statusCode = 401;
+            resp.end("Incorrect password!");
+          }
         } else {
-          console.log(data);
+          resp.statusCode = 401;
+          resp.end("User not found!");
         }
       });
     });
-
-    const sql = ``;
   } else {
     resp.statusCode = 400;
-    resp.end("api not found!");
+    resp.end("API not found!");
   }
 }
