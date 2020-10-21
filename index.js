@@ -2,7 +2,11 @@ import http from "http";
 import fs from "fs";
 import mySql from "mysql";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import { ENETRESET } from "constants";
+
+dotenv.config();
 
 let connection = mySql.createConnection({
   host: "db4free.net",
@@ -49,20 +53,9 @@ function handleRequest(req, resp) {
   }
 }
 
-function apiHandler(req, resp) {
+async function apiHandler(req, resp) {
   const route = req.url.slice(5);
-  if (route === "users") {
-    const sql = "SELECT * FROM users";
-    connection.query(sql, (err, users) => {
-      if (err) {
-        console.log(err, "db error");
-        resp.statusCode = 400;
-        resp.end("db error");
-      } else {
-        resp.end(JSON.stringify(users));
-      }
-    });
-  } else if (route.startsWith("checklogin/")) {
+  if (route.startsWith("checklogin/")) {
     const login = route.slice(11);
     const sql = `SELECT id FROM users WHERE login = "${login}"`;
     connection.query(sql, (err, users) => {
@@ -75,52 +68,75 @@ function apiHandler(req, resp) {
       }
     });
   } else if (route === "register") {
-    // req.data1 => req.data2 => req.data3 => req.end
-    const chunks = [];
-    req.on("data", (chunk) => chunks.push(chunk));
-    req.on("end", async () => {
-      const body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    const body = await getBody(req);
 
-      const hash = await bcrypt.hash(body.password, 4);
+    const hash = await bcrypt.hash(body.password, 4);
 
-      const sql = `INSERT INTO users (name, login, passhash) VALUES ("${body.name}", "${body.login}", "${hash}")`;
-      connection.query(sql, (err) => {
-        if (err) {
-          console.log(err, "db error");
-          resp.statusCode = 400;
-          resp.end("db error");
-        } else {
-          resp.end("Successfully registered!");
-        }
-      });
+    const sql = `INSERT INTO users (name, login, passhash) VALUES ("${body.name}", "${body.login}", "${hash}")`;
+    connection.query(sql, (err) => {
+      if (err) {
+        console.log(err, "db error");
+        resp.statusCode = 400;
+        resp.end("db error");
+      } else {
+        resp.end("Successfully registered!");
+      }
     });
   } else if (route === "auth") {
-    const chunks = [];
-    req.on("data", (chunk) => chunks.push(chunk));
-    req.on("end", () => {
-      const body = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    const body = await getBody(req);
 
-      const sql = `SELECT passhash FROM users WHERE login = "${body.login}"`;
+    const sql = `SELECT id, passhash FROM users WHERE login = "${body.login}"`;
 
-      connection.query(sql, async (err, data) => {
-        if (err) {
-          console.log(err);
-        } else if (data.length) {
-          const correct = await bcrypt.compare(body.password, data[0].passhash);
-          if (correct) {
-            resp.end("Correcto!");
-          } else {
-            resp.statusCode = 401;
-            resp.end("Incorrect password!");
-          }
+    connection.query(sql, async (err, data) => {
+      if (err) {
+        console.log(err);
+      } else if (data.length) {
+        const correct = await bcrypt.compare(body.password, data[0].passhash);
+        if (correct) {
+          let token = jwt.sign(
+            { user: body.login, id: data[0].id },
+            process.env.JWTKEY
+          );
+          resp.end(token);
         } else {
           resp.statusCode = 401;
-          resp.end("User not found!");
+          resp.end("Incorrect password!");
         }
-      });
+      } else {
+        resp.statusCode = 401;
+        resp.end("User not found!");
+      }
+    });
+  } else if (route === "users") {
+    const body = await getBody(req);
+
+    const sql = `SELECT name, login FROM users`;
+
+    connection.query(sql, (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        resp.end(JSON.stringify(data));
+      }
     });
   } else {
     resp.statusCode = 400;
     resp.end("API not found!");
   }
+}
+
+function getBody(req) {
+  // req.data1 => req.data2 => req.data3 => req.end
+  return new Promise((resolve) => {
+    const chunks = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", () => {
+      const dataStr = Buffer.concat(chunks).toString("utf8");
+      try {
+        resolve(JSON.parse(dataStr));
+      } catch (error) {
+        resolve(dataStr);
+      }
+    });
+  });
 }

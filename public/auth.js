@@ -19,7 +19,8 @@ async function auth(login, password) {
   });
 
   if (response.ok) {
-    alert("Successfully loged in");
+    localStorage.token = await response.text();
+    location.href = "users.html";
     // const body = await response.json();
   } else {
     alert("Inccorect login and/or password");
