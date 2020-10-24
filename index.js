@@ -24,13 +24,13 @@ http.createServer(handleRequest).listen(3000, () => {
 });
 
 function handleRequest(req, resp) {
+  const end = makeEnd(resp);
   //resp.end(fs.readFileSync("./public/index.html")); sync
 
   if (req.url === "/") {
     fs.readFile("./public/index.html", (err, fileData) => {
       if (err) {
-        console.error(err.message);
-        resp.end("404 file not found");
+        end("404 file not found", 404);
       } else {
         resp.end(fileData);
       }
@@ -41,19 +41,18 @@ function handleRequest(req, resp) {
     fs.readFile("./public" + req.url, (err, fileData) => {
       if (err) {
         console.error(err.message);
-        resp.statusCode = 404;
-        resp.end("404 file not found");
+        end("404 file not found", 404);
       } else {
-        resp.end(fileData);
+        end(fileData);
       }
     });
   } else {
-    resp.statusCode = 400;
-    resp.end("Unexpected request method and/or URL");
+    end("Unexpected request method and/or URL", 400);
   }
 }
 
 async function apiHandler(req, resp) {
+  const end = makeEnd(resp);
   const route = req.url.slice(5);
   if (route.startsWith("checklogin/")) {
     const login = route.slice(11);
@@ -72,6 +71,7 @@ async function apiHandler(req, resp) {
     const hash = await bcrypt.hash(body.password, 4);
 
     const sql = `INSERT INTO users (name, login, passhash) VALUES ("${body.name}", "${body.login}", "${hash}")`;
+    H;
 
     {
       // connection.query(sql, (err) => {
@@ -122,30 +122,36 @@ async function apiHandler(req, resp) {
       end(token);
     } catch (err) {}
   } else if (route === "users") {
-    const body = await getBody(req);
-
-    const sql = `SELECT name, login FROM users`;
+    const token = await getBody(req);
 
     try {
-      end(await query(sql));
+      await jwt.verify(token, process.env.JWTKEY);
+      const sql = `SELECT name, login FROM users`;
+
+      try {
+        end(await query(sql));
+      } catch (err) {
+        console.log(err);
+        end("db error", 400);
+      }
     } catch (err) {
-      console.log(err);
-      end("db error", 400);
+      end("Unauthorized request", 401);
     }
   } else {
     end("API not found!", 400);
   }
+}
 
-  //RESPONSE END FUNCTION
-  function end(msg, code) {
+function makeEnd(resp) {
+  return function end(msg, code) {
     if (code) {
       resp.statusCode = code;
     }
-    if (typeof msg != "string") {
+    if (typeof msg != "string" && !(msg instanceof Buffer)) {
       msg = JSON.stringify(msg);
     }
     resp.end(msg);
-  }
+  };
 }
 
 //PROMISIFY REQUEST BODY
