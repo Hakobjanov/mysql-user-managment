@@ -6,14 +6,6 @@ async function getUsers() {
   if (response.ok) {
     const data = await response.json();
     const users = data.map(Object.values);
-
-    const columns = ["name", "login"];
-    const table = new Table("#tableContainer", {
-      columns,
-      users,
-      header: true,
-      footer: true,
-    });
   } else {
     location.href = "auth.html";
   }

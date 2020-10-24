@@ -61,10 +61,9 @@ async function apiHandler(req, resp) {
     connection.query(sql, (err, users) => {
       if (err) {
         console.log(err, "db error");
-        resp.statusCode = 400;
-        resp.end("db error");
+        end("db error", 400);
       } else {
-        resp.end(users.length ? "false" : "true");
+        end(users.length ? "false" : "true");
       }
     });
   } else if (route === "register") {
@@ -73,58 +72,83 @@ async function apiHandler(req, resp) {
     const hash = await bcrypt.hash(body.password, 4);
 
     const sql = `INSERT INTO users (name, login, passhash) VALUES ("${body.name}", "${body.login}", "${hash}")`;
-    connection.query(sql, (err) => {
-      if (err) {
-        console.log(err, "db error");
-        resp.statusCode = 400;
-        resp.end("db error");
-      } else {
-        resp.end("Successfully registered!");
-      }
-    });
+
+    {
+      // connection.query(sql, (err) => {
+      //   if (err) {
+      //     console.log(err, "db error");
+      //     resp.statusCode = 400;
+      //     resp.end("db error");
+      //   } else {
+      //     resp.end("Successfully registered!");
+      //   }
+      // });
+      // query(sql)
+      //   .then(() => resp.end("Successfully registered!"))
+      //   .catch(() => {
+      //     console.log(err, "db error");
+      //     resp.statusCode = 400;
+      //     resp.end("db error");
+      //   });
+    }
+
+    try {
+      await query(sql);
+      end("Successfully registered!");
+    } catch (err) {
+      console.log(err, "db error");
+
+      end("db error", 400);
+    }
   } else if (route === "auth") {
     const body = await getBody(req);
 
     const sql = `SELECT id, passhash FROM users WHERE login = "${body.login}"`;
 
-    connection.query(sql, async (err, data) => {
-      if (err) {
-        console.log(err);
-      } else if (data.length) {
-        const correct = await bcrypt.compare(body.password, data[0].passhash);
-        if (correct) {
-          let token = jwt.sign(
-            { user: body.login, id: data[0].id },
-            process.env.JWTKEY
-          );
-          resp.end(token);
-        } else {
-          resp.statusCode = 401;
-          resp.end("Incorrect password!");
-        }
-      } else {
-        resp.statusCode = 401;
-        resp.end("User not found!");
+    try {
+      const data = await query(sql);
+
+      if (!data.length) {
+        return end("User not found!", 401);
       }
-    });
+      const correct = await bcrypt.compare(body.password, data[0].passhash);
+      if (!correct) {
+        return end("Incorrect password!", 401);
+      }
+      let token = jwt.sign(
+        { user: body.login, id: data[0].id },
+        process.env.JWTKEY
+      );
+      end(token);
+    } catch (err) {}
   } else if (route === "users") {
     const body = await getBody(req);
 
     const sql = `SELECT name, login FROM users`;
 
-    connection.query(sql, (err, data) => {
-      if (err) {
-        console.log(err);
-      } else {
-        resp.end(JSON.stringify(data));
-      }
-    });
+    try {
+      end(await query(sql));
+    } catch (err) {
+      console.log(err);
+      end("db error", 400);
+    }
   } else {
-    resp.statusCode = 400;
-    resp.end("API not found!");
+    end("API not found!", 400);
+  }
+
+  //RESPONSE END FUNCTION
+  function end(msg, code) {
+    if (code) {
+      resp.statusCode = code;
+    }
+    if (typeof msg != "string") {
+      msg = JSON.stringify(msg);
+    }
+    resp.end(msg);
   }
 }
 
+//PROMISIFY REQUEST BODY
 function getBody(req) {
   // req.data1 => req.data2 => req.data3 => req.end
   return new Promise((resolve) => {
@@ -136,6 +160,19 @@ function getBody(req) {
         resolve(JSON.parse(dataStr));
       } catch (error) {
         resolve(dataStr);
+      }
+    });
+  });
+}
+
+//PROMISIFY SQL QUERY
+function query(sql) {
+  return new Promise((resolve, reject) => {
+    connection.query(sql, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
       }
     });
   });
