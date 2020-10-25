@@ -1,7 +1,144 @@
-body {
-  background-color: cornsilk;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-input:invalid {
-  border-color: red;
+body {
+  font-family: "Encode Sans Expanded", sans-serif;
+  height: 100vh;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 42px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.form {
+  width: 80%;
+}
+
+.form div {
+  margin: 10px 0;
+}
+
+.input-wrapper {
+  width: 100%;
+  position: relative;
+  height: 55px;
+  overflow: hidden;
+  /* background: rgba(0, 0, 255, 0.5); */
+}
+
+.input-wrapper input {
+  width: 100%;
+  height: 100%;
+  font-size: 20px;
+  color: #595f6e;
+  border: none;
+  outline: none;
+  padding-top: 20px;
+}
+
+.input-wrapper label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  border-bottom: 2px solid black;
+}
+
+.input-wrapper label::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 100%;
+  width: 100%;
+  border-bottom: 3px solid #5fa8d3;
+  transform: translateX(-101%);
+  transition: all 0.3s ease;
+}
+
+.input-span {
+  font-size: 19px;
+  opacity: 0.4;
+  font-weight: 600;
+  position: absolute;
+  bottom: 5px;
+  left: 0px;
+  transition: all 0.3s ease;
+}
+
+.input-wrapper input:focus + .input-label .input-span,
+.input-wrapper input:valid + .input-label .input-span {
+  transform: translateY(-150%);
+  font-size: 16px;
+  font-weight: 400;
+  opacity: 0.9;
+  color: #5fa8d3;
+}
+
+.input-wrapper input:focus + .input-label::after,
+.input-wrapper input:valid + .input-label::after {
+  transform: translateX(0%);
+}
+
+/* .name-wrapper input:invalid + .label-name::after {
+  border-bottom: 3px solid red;
+}
+
+ .name-wrapper input:invalid + .label-name .name-span {
+  color: red;
+} */
+
+.submit-btn {
+  font-family: "Encode Sans Expanded", sans-serif;
+  background-color: #fff;
+  font-size: 22px;
+  font-weight: 600;
+  width: 100%;
+  margin-top: 25px;
+  padding: 10px 0;
+  outline: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+
+.submit-btn:hover {
+  background-color: #99ceeec0;
+  color: #fff;
+  border-color: #fff;
+}
+
+.user {
+  margin: 5px 0;
+  padding: 5px;
+  border: 1px solid #000;
+  border-radius: 5px;
+}
+
+.login {
+  font-weight: 300;
+}
+
+.login span {
+  font-weight: 600;
 }

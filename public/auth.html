@@ -3,34 +3,50 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Auth</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Authorization</title>
   </head>
   <body>
-    <h1>Plaese enter your login and password</h1>
+    <div class="container">
+      <h1 class="title">Authorize yourself</h1>
 
-    <form class="auth-form">
-      <label>
-        <input
-          id="auth-login"
-          class="auth-login"
-          type="text"
-          placeholder="enter your login here"
-          required
-          pattern="\w{4,255}"
-        />
-      </label>
-      <label>
-        <input
-          id="auth-password"
-          class="auth-password"
-          type="text"
-          required
-          pattern="\w{8,255}"
-          placeholder="enter your password here"
-        />
-      </label>
-      <button type="submit" class="auth-btn">log in</button>
-    </form>
+      <form class="form">
+        <div class="input-wrapper">
+          <input
+            id="auth-login"
+            class="auth-login"
+            name="login"
+            type="text"
+            required
+            pattern="\w{4,255}"
+          />
+          <label for="login" class="input-label">
+            <span class="input-span">Enter your login</span>
+          </label>
+        </div>
+
+        <div class="input-wrapper">
+          <input
+            id="auth-password"
+            class="auth-password"
+            name="password"
+            type="text"
+            required
+            pattern="\w{8,255}"
+            placeholder=""
+          />
+          <label for="password" class="input-label">
+            <span class="input-span">Enter your password</span>
+          </label>
+        </div>
+
+        <button type="submit" class="submit-btn">log in</button>
+      </form>
+    </div>
 
     <script src="./auth.js"></script>
   </body>

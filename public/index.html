@@ -3,57 +3,75 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
     <title>Document</title>
   </head>
   <body>
-    <h1>Register</h1>
-    <form class="form" id="form">
-      <label
-        >Name
-        <input
-          type="text"
-          name="name"
-          placeholder="your name"
-          required
-          pattern="\w{3,255}"
-        />
-      </label>
-      <label
-        >Login
-        <input
-          type="text"
-          name="login"
-          placeholder="your login"
-          required
-          pattern="\w{4,255}"
-          id="loginInput"
-        />
-      </label>
-      <label
-        >Password
-        <input
-          class="password"
-          name="password"
-          type="text"
-          placeholder="your password"
-          required
-          pattern="\w{8,255}"
-        />
-      </label>
-      <label
-        >Confirm password
-        <input
-          class="password-confirm"
-          name="confirm"
-          type="text"
-          placeholder="confirm password"
-          required
-          pattern="\w{8,255}"
-        />
-      </label>
-      <button type="submit" class="submit-btn">Submit</button>
-    </form>
+    <div class="container">
+      <h1 class="title">Register here</h1>
+
+      <form class="form" id="form">
+        <div class="input-wrapper">
+          <input
+            type="text"
+            name="name"
+            required
+            pattern="\w{3,255}"
+            autocomplete="off"
+          />
+          <label for="name" class="input-label">
+            <span class="input-span">Your name here</span>
+          </label>
+        </div>
+
+        <div class="input-wrapper">
+          <input
+            type="text"
+            name="login"
+            required
+            pattern="\w{4,255}"
+            id="loginInput"
+            autocomplete="off"
+          />
+
+          <label for="login" class="input-label">
+            <span class="input-span">Your login here</span>
+          </label>
+        </div>
+
+        <div class="input-wrapper">
+          <input
+            class="password"
+            name="password"
+            type="text"
+            required
+            pattern="\w{8,255}"
+          />
+          <label for="password" class="input-label">
+            <span class="input-span">Your password here</span>
+          </label>
+        </div>
+
+        <div class="input-wrapper">
+          <input
+            class="password-confirm"
+            name="confirm"
+            type="text"
+            required
+            pattern="\w{8,255}"
+          />
+          <label for="confirm" class="input-label">
+            <span class="input-span">Confirm your password</span>
+          </label>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit</button>
+      </form>
+    </div>
 
     <script src="main.js"></script>
   </body>

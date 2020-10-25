@@ -1,4 +1,4 @@
-const authForm = document.querySelector(".auth-form");
+const authForm = document.querySelector(".form");
 const authLogin = document.querySelector(".auth-login");
 const authPassword = document.querySelector(".auth-password");
 

@@ -71,7 +71,6 @@ async function apiHandler(req, resp) {
     const hash = await bcrypt.hash(body.password, 4);
 
     const sql = `INSERT INTO users (name, login, passhash) VALUES ("${body.name}", "${body.login}", "${hash}")`;
-    H;
 
     {
       // connection.query(sql, (err) => {
