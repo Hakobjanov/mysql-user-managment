@@ -10,8 +10,8 @@ dotenv.config();
 
 let connection = mySql.createConnection({
   host: "db4free.net",
-  user: "vagangdenagan",
-  password: "123654789",
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASS,
   database: "mysql_users_db",
 });
 
