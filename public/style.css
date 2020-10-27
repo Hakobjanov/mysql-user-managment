@@ -86,12 +86,16 @@ body {
   transition: all 0.3s ease;
 }
 
-.input-wrapper input:focus + .input-label .input-span,
-.input-wrapper input:valid + .input-label .input-span {
+.input-wrapper input.lifted + .input-label .input-span,
+.input-wrapper input:focus + .input-label .input-span {
   transform: translateY(-150%);
   font-size: 16px;
   font-weight: 400;
   opacity: 0.9;
+}
+
+.input-wrapper input:focus + .input-label .input-span,
+.input-wrapper input:valid + .input-label .input-span {
   color: #5fa8d3;
 }
 
@@ -100,13 +104,13 @@ body {
   transform: translateX(0%);
 }
 
-/* .name-wrapper input:invalid + .label-name::after {
+.checked .input-wrapper input:invalid + .input-label::after {
   border-bottom: 3px solid red;
 }
 
- .name-wrapper input:invalid + .label-name .name-span {
+.checked .input-wrapper input:invalid + .input-label .input-span {
   color: red;
-} */
+}
 
 .submit-btn {
   font-family: "Encode Sans Expanded", sans-serif;

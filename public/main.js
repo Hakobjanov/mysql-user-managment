@@ -9,8 +9,23 @@ submitBtn.addEventListener("click", () => {
   passwordConfirmInput.setCustomValidity("");
 });
 
+form.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    form.classList.add("checked");
+  }
+});
+
+form.addEventListener("input", (e) => {
+  if (e.target.localName === "input") {
+    e.target.classList[e.target.value ? "add" : "remove"]("lifted");
+  }
+});
+
+submitBtn.addEventListener("click", () => form.classList.add("checked"));
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+
   const formData = new FormData(form);
 
   const { name, login, password, confirm } = Object.fromEntries([
