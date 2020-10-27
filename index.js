@@ -43,6 +43,14 @@ function handleRequest(req, resp) {
         console.error(err.message);
         end("404 file not found", 404);
       } else {
+        if (req.url.endsWith(".css")) {
+          resp.setHeader("Content-Type", "text/css; charset=utf-8");
+        } else if (req.url.endsWith(".js")) {
+          resp.setHeader(
+            "Content-Type",
+            "application/javascript; charset=utf-8"
+          );
+        }
         end(fileData);
       }
     });

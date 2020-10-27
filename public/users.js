@@ -1,8 +1,8 @@
 const userList = document.querySelector("#userList");
 
 function getBg() {
-  let color = Math.floor(Math.random() * 16777216).toString(16);
-  return "#000000".slice(0, -color.length) + color;
+  let color = Math.floor(Math.random() * 360);
+  return `hsl(${color} 70% 80%)`;
 }
 
 async function getUsers() {

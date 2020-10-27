@@ -20,6 +20,7 @@
             id="auth-login"
             class="auth-login"
             name="login"
+            title="should be 4 to 255 characters long"
             type="text"
             required
             pattern="\w{4,255}"
@@ -34,6 +35,7 @@
             id="auth-password"
             class="auth-password"
             name="password"
+            title="should be 8 to 255 characters long"
             type="text"
             required
             pattern="\w{8,255}"
@@ -48,6 +50,6 @@
       </form>
     </div>
 
-    <script src="./auth.js"></script>
+    <script src="./auth.js" type="module"></script>
   </body>
 </html>

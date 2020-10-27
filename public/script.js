@@ -1,7 +1,6 @@
-import Toaster from "../Toaster/Toaster.js";
+import Toaster from "./Toaster/Toaster.js";
 
-const name = "Name is required.";
-const login = "Login is required.";
+const name = "All fields must be ";
 
 //Toaster
 const toaster1 = new Toaster({

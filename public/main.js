@@ -1,8 +1,22 @@
+import Toaster from "./Toaster/Toaster.js";
+
+//Toaster
+const toaster = new Toaster({
+  side: "bottom-left",
+  // from: 'bottom',
+  // to: 'right',
+  // life: 1,
+  limit: 10,
+  width: 100,
+  gap: 4,
+});
+
 const password = document.querySelector(".password");
 const passwordConfirmInput = document.querySelector(".password-confirm");
 const submitBtn = document.querySelector(".submit-btn");
 const form = document.querySelector("#form");
 const loginInput = document.querySelector("#loginInput");
+const input = document.querySelector(".input-wrapper input");
 
 submitBtn.addEventListener("click", () => {
   loginInput.setCustomValidity("");
@@ -11,7 +25,7 @@ submitBtn.addEventListener("click", () => {
 
 form.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
-    form.classList.add("checked");
+    reportIssues();
   }
 });
 
@@ -21,7 +35,9 @@ form.addEventListener("input", (e) => {
   }
 });
 
-submitBtn.addEventListener("click", () => form.classList.add("checked"));
+submitBtn.addEventListener("click", () => reportIssues());
+
+// form.addEventListener
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -40,10 +56,10 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify({ name, login, password }),
     });
     if (response.ok) {
-      alert("successfully registered");
-      location.href = "./auth.html";
+      toaster.log("successfully registered", "success");
+      setTimeout(() => (location.href = "./auth.html"), 900);
     } else {
-      alert("could not register");
+      toaster.log("could not register", "fail");
     }
   } else {
     form.reportValidity();
@@ -75,4 +91,12 @@ async function checkLoginAvailability(login) {
   const response = await fetch("/api/checklogin/" + login);
   const answer = await response.text();
   return eval(answer);
+}
+
+function reportIssues() {
+  toaster.clear();
+  form.querySelectorAll(":invalid").forEach((input) => {
+    toaster.log(`${input.name}: ${input.title}`);
+  });
+  form.classList.add("checked");
 }
