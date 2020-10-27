@@ -19,7 +19,7 @@ connection.connect(() => {
   console.log("db connected");
 });
 
-http.createServer(handleRequest).listen(3000, () => {
+http.createServer(handleRequest).listen(process.env.PORT || 3000, () => {
   console.log("server started");
 });
 
